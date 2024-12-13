@@ -1,14 +1,60 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import React from "react";
-import { Link } from "expo-router";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  Image,
+} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useFocusEffect } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
+type Media = {
+  name: string;
+  uri: string;
+};
 const HomeScreen = () => {
+  const [image, setImage] = useState<Media[]>([]);
+  useFocusEffect(
+    useCallback(() => {
+      loadFiles();
+    }, [])
+  );
+  const loadFiles = async () => {
+    if (!FileSystem.documentDirectory) {
+      return null;
+    }
+    const res = await FileSystem.readDirectoryAsync(
+      FileSystem.documentDirectory
+    );
+
+    setImage(
+      res
+        .filter((file) => file.endsWith(".jpg"))
+        .map((file) => ({
+          name: file,
+          uri: FileSystem.documentDirectory + file,
+        }))
+    );
+  };
+  console.log(JSON.stringify(image, null, 2));
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: 600 }}>Hello world</Text>
-      <Link href={"/image-1"}>image 1</Link>
-      <Link href={"/image-2"}>image 2</Link>
-      <Link href={"/image-3"}>image 3</Link>
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={image}
+        contentContainerStyle={{ gap: 1 }}
+        columnWrapperStyle={{ gap: 1 }}
+        numColumns={3}
+        renderItem={({ item }) => (
+          <Pressable style={{ flex: 1, maxWidth: "33.33%" }}>
+            <Image
+              source={{ uri: item.uri }}
+              style={{ aspectRatio: 3 / 4, borderRadius: 5 }}
+            />
+          </Pressable>
+        )}
+      />
       <Link href="/camera" asChild>
         <Pressable style={styles.floatingButton}>
           <MaterialIcons name="photo-camera" size={30} color="white" />
