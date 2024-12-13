@@ -31,7 +31,7 @@ const HomeScreen = () => {
 
     setImage(
       res
-        .filter((file) => file.endsWith(".jpg"))
+        // .filter((file) => file.endsWith(".jpg"))
         .map((file) => ({
           name: file,
           uri: FileSystem.documentDirectory + file,
@@ -47,12 +47,14 @@ const HomeScreen = () => {
         columnWrapperStyle={{ gap: 1 }}
         numColumns={3}
         renderItem={({ item }) => (
-          <Pressable style={{ flex: 1, maxWidth: "33.33%" }}>
-            <Image
-              source={{ uri: item.uri }}
-              style={{ aspectRatio: 3 / 4, borderRadius: 5 }}
-            />
-          </Pressable>
+          <Link href={`/${item.name}`} asChild>
+            <Pressable style={{ flex: 1, maxWidth: "33.33%" }}>
+              <Image
+                source={{ uri: item.uri }}
+                style={{ aspectRatio: 3 / 4, borderRadius: 5 }}
+              />
+            </Pressable>
+          </Link>
         )}
       />
       <Link href="/camera" asChild>
