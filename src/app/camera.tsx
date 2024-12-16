@@ -81,7 +81,11 @@ const CameraScreen = () => {
     }
   };
 
-  const saveFile = async (uri: string) => {
+  const saveFile = async (uri: string | undefined) => {
+    if (!uri) {
+      console.error("Invalid file URI");
+      return;
+    }
     try {
       const fileName = path.parse(uri).base;
       await FileSystem.copyAsync({
